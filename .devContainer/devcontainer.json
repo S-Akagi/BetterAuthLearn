@@ -1,0 +1,14 @@
+{
+  "name": "BetterAuth Learning Environment",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  },
+  "forwardPorts": [3000, 3001, 5432, 8000],
+  "postCreateCommand": "npm install",
+  "remoteUser": "node"
+}
