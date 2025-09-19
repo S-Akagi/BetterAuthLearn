@@ -5,7 +5,9 @@
   "workspaceFolder": "/workspace",
   "customizations": {
     "vscode": {
-      "extensions": []
+      "extensions": [
+        "biomejs.biome"
+      ]
     }
   },
   "forwardPorts": [5173, 3001, 5432, 8000],
