@@ -2,7 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false, // BetterAuth がリクエストボディを自前で処理するため必須
+  });
+
+  await app.listen(3001);
 }
-bootstrap();
+void bootstrap();

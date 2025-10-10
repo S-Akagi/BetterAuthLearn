@@ -10,7 +10,7 @@
       ]
     }
   },
-  "forwardPorts": [5173, 3001, 5432, 8000],
+  "forwardPorts": [5174, 3001, 5432, 8000],
   "postCreateCommand": "npm install -g @nestjs/cli",
   "remoteUser": "node"
 }
