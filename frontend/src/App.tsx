@@ -1,6 +1,7 @@
 // src/frontend/src/App.tsx
 import { useState, useEffect } from "react";
 import { useAuthStore } from "./lib/store";
+import { Snackbar } from "./components/Snackbar";
 import "./App.css";
 
 function App() {
@@ -139,4 +140,13 @@ return (
   );
 }
 
-export default App;
+const AppWithSnackbar = () => {
+  return (
+    <>
+      <App />
+      <Snackbar />
+    </>
+  );
+};
+
+export default AppWithSnackbar;
