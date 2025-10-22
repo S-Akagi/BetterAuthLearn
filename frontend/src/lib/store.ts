@@ -18,7 +18,6 @@ interface AuthState {
   // 状態
   user: User | null
   organizations?: Organization[] | null
-  activeOrganization?: Organization | null
   isLoading: boolean
   notifications: Notification[]
 
@@ -57,11 +56,7 @@ const createNotification = (message: string, type: 'success' | 'error'): Notific
 })
 
 // 認証成功ハンドリング
-const handleAuthSuccess = (
-  user: User,
-  message: string,
-  set: (state: Partial<AuthState>) => void
-) => {
+const handleAuthSuccess = (user: User, message: string, set: (state: Partial<AuthState>) => void) => {
   set({ user })
   useAuthStore.getState().addNotification(message, 'success')
 }
@@ -73,6 +68,16 @@ const handleAuthError = (error: Error | { message?: string }, fallbackMessage: s
   throw new Error(errorMessage)
 }
 
+// 組織一覧取得
+const fetchOrganizations = async (set: (state: Partial<AuthState>) => void) => {
+  const { data, error } = await authClient.organization.list()
+  if (error) {
+    handleAuthError(error, '組織情報の取得に失敗しました')
+    return
+  }
+  set({ organizations: data || null })
+}
+
 // ========================================
 // Zustand ストア
 // ========================================
@@ -80,7 +85,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   // 初期状態
   user: null,
   organizations: null,
-  activeOrganization: null,
   isLoading: true,
   notifications: [],
 
@@ -129,6 +133,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     if (data?.user) {
       handleAuthSuccess(data.user, 'サインインしました', set)
+      fetchOrganizations(set)
     }
   },
 
@@ -186,26 +191,20 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
 
     if (data) {
-      useAuthStore.getState().addNotification(
-        `組織「${data.name}」を作成しました`, 
-        'success'
-      )
+      useAuthStore.getState().addNotification(`組織「${data.name}」を作成しました`, 'success')
       console.log('Created organization:', data)
-      // 必要に応じて状態を更新
-      const { data: orgsData } = await authClient.organization.list()
-      set({ organizations: orgsData || null })  
+      fetchOrganizations(set)
     }
   },
 
-    // セッション確認
+  // セッション確認
   checkSession: async () => {
     try {
       const { data } = await authClient.getSession()
 
       if (data?.user) {
         set({ user: data.user })
-        const { data: orgsData } = await authClient.organization.list()
-        set({ organizations: orgsData || null })
+        fetchOrganizations(set)
       }
     } catch (error) {
       console.error('Error checking session:', error)

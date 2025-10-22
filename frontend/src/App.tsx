@@ -21,21 +21,21 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <DashboardPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/organizations" 
+        <Route
+          path="/organizations"
           element={
             <ProtectedRoute>
               <OrganizationPage />
             </ProtectedRoute>
-          } 
+          }
         />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>

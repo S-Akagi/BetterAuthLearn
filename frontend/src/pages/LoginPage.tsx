@@ -106,7 +106,7 @@ export function LoginPage() {
         <div className="mt-8 text-center">
           <button
             type="submit"
-            className="rounded-lg bg-indigo-600 px-10 py-2 text-white font-medium text-lg hover:bg-indigo-700 transition-colors shadow-md"
+            className="rounded-lg bg-indigo-600 px-10 py-2 font-medium text-lg text-white shadow-md transition-colors hover:bg-indigo-700"
           >
             {isSignUp ? 'Sign Up' : 'Sign In'}
           </button>

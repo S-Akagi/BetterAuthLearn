@@ -29,26 +29,23 @@ export function OrganizationPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <Link 
-          to="/dashboard"
-          className="text-indigo-600 hover:text-indigo-700 font-medium"
-        >
+        <Link to="/dashboard" className="font-medium text-indigo-600 hover:text-indigo-700">
           ← Back to Dashboard
         </Link>
       </div>
 
-      <h1 className="text-2xl font-bold mb-6">Organization Management</h1>
+      <h2 className="mb-6 font-bold text-2xl">Organization Management</h2>
 
       {/* 組織一覧 */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Your Organizations</h2>
+        <h2 className="mb-4 font-semibold text-xl">Your Organizations</h2>
         {organizations && organizations.length > 0 ? (
           <div className="space-y-2">
             {organizations.map((org) => (
-              <div key={org.id} className="border rounded p-4 bg-gray-50">
+              <div key={org.id} className="rounded border bg-gray-50 p-4">
                 <h3 className="font-medium">{org.name}</h3>
-                <p className="text-sm text-gray-600">Slug: {org.slug}</p>
-                <p className="text-sm text-gray-600">ID: {org.id}</p>
+                <p className="text-gray-600 text-sm">Slug: {org.slug}</p>
+                <p className="text-gray-600 text-sm">ID: {org.id}</p>
               </div>
             ))}
           </div>
@@ -59,21 +56,21 @@ export function OrganizationPage() {
 
       {/* 組織作成セクション */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Create New Organization</h2>
+        <h2 className="mb-4 font-semibold text-xl">Create New Organization</h2>
         {!showOrgForm ? (
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => setShowOrgForm(true)}
-            className="rounded-lg bg-indigo-600 px-6 py-2 text-white font-medium hover:bg-indigo-700 transition-colors shadow-md"
+            className="rounded-lg bg-indigo-600 px-6 py-2 font-medium text-white shadow-md transition-colors hover:bg-indigo-700"
           >
             Create Organization
           </button>
         ) : (
-          <div className="border rounded p-4 bg-gray-50">
+          <div className="rounded border bg-gray-50 p-4">
             <h3 className="mb-4 font-medium text-lg">Create New Organization</h3>
             <form onSubmit={handleOrgSubmit} className="space-y-4">
               <div>
-                <label htmlFor={orgNameId} className="block mb-1 font-medium text-sm">
+                <label htmlFor={orgNameId} className="mb-1 block font-medium text-sm">
                   Organization Name
                 </label>
                 <input
@@ -87,7 +84,7 @@ export function OrganizationPage() {
                 />
               </div>
               <div>
-                <label htmlFor={orgSlugId} className="block mb-1 font-medium text-sm">
+                <label htmlFor={orgSlugId} className="mb-1 block font-medium text-sm">
                   Organization Slug
                 </label>
                 <input
@@ -101,20 +98,20 @@ export function OrganizationPage() {
                 />
               </div>
               <div className="flex gap-2">
-                <button 
+                <button
                   type="submit"
-                  className="rounded-lg bg-emerald-600 px-6 py-2 text-white font-medium hover:bg-emerald-700 transition-colors shadow-md"
+                  className="rounded-lg bg-emerald-600 px-6 py-2 font-medium text-white shadow-md transition-colors hover:bg-emerald-700"
                 >
                   Create
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => {
                     setShowOrgForm(false)
                     setOrgName('')
                     setOrgSlug('')
                   }}
-                  className="rounded-lg bg-gray-100 px-6 py-2 text-gray-800 font-medium hover:bg-gray-200 transition-colors border border-gray-300"
+                  className="rounded-lg border border-gray-300 bg-gray-100 px-6 py-2 font-medium text-gray-800 transition-colors hover:bg-gray-200"
                 >
                   Cancel
                 </button>
