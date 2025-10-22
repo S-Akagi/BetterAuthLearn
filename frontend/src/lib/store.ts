@@ -1,44 +1,53 @@
-import { create } from 'zustand';
-import { authClient } from './auth';
+import { create } from 'zustand'
+import { authClient } from './auth'
 
 // ========================================
 // 型定義
 // ========================================
 interface User {
-  id: string;
-  email: string;
-  name: string;
-  image?: string | null;
-  emailVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  email: string
+  name: string
+  image?: string | null
+  emailVerified: boolean
+  createdAt: Date
+  updatedAt: Date
 }
 
 interface Notification {
-  id: string;
-  message: string;
-  type: 'success' | 'error';
+  id: string
+  message: string
+  type: 'success' | 'error'
 }
 
 interface AuthState {
   // 状態
-  user: User | null;
-  isLoading: boolean;
-  notifications: Notification[];
-  
+  user: User | null
+  isLoading: boolean
+  notifications: Notification[]
+
   // 通知アクション
-  addNotification: (message: string, type: 'success' | 'error') => void;
-  removeNotification: (id: string) => void;
-  
+  addNotification: (message: string, type: 'success' | 'error') => void
+  removeNotification: (id: string) => void
+
   // 認証アクション
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  checkSession: () => Promise<void>;
-  
+  signIn: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string, name: string) => Promise<void>
+  signOut: () => Promise<void>
+  checkSession: () => Promise<void>
+
+  // 組織アクション
+  createOrg: (
+    name: string,
+    slug: string,
+    logo?: string,
+    metadata?: Record<string, any>,
+    keepCurrentActiveOrganization?: boolean,
+  ) => Promise<void>
+
   // 内部アクション
-  setUser: (user: User | null) => void;
-  setLoading: (loading: boolean) => void;
+  setUser: (user: User | null) => void
+  setLoading: (loading: boolean) => void
 }
 
 // ========================================
@@ -49,20 +58,20 @@ const createNotification = (message: string, type: 'success' | 'error'): Notific
   id: Date.now().toString(),
   message,
   type,
-});
+})
 
 // 認証成功ハンドリング
 const handleAuthSuccess = (user: User, message: string, set: any) => {
-  set({ user });
-  useAuthStore.getState().addNotification(message, 'success');
-};
+  set({ user })
+  useAuthStore.getState().addNotification(message, 'success')
+}
 
 // 認証エラーハンドリング
 const handleAuthError = (error: any, fallbackMessage: string) => {
-  const errorMessage = error?.message || fallbackMessage;
-  useAuthStore.getState().addNotification(errorMessage, 'error');
-  throw new Error(errorMessage);
-};
+  const errorMessage = error?.message || fallbackMessage
+  useAuthStore.getState().addNotification(errorMessage, 'error')
+  throw new Error(errorMessage)
+}
 
 // ========================================
 // Zustand ストア
@@ -77,24 +86,24 @@ export const useAuthStore = create<AuthState>((set) => ({
   // 通知管理
   // ========================================
   addNotification: (message, type) => {
-    const notification = createNotification(message, type);
-    
+    const notification = createNotification(message, type)
+
     set((state) => ({
-      notifications: [...state.notifications, notification]
-    }));
-    
+      notifications: [...state.notifications, notification],
+    }))
+
     // 3秒後に自動削除
     setTimeout(() => {
       set((state) => ({
-        notifications: state.notifications.filter(n => n.id !== notification.id)
-      }));
-    }, 3000);
+        notifications: state.notifications.filter((n) => n.id !== notification.id),
+      }))
+    }, 3000)
   },
 
   removeNotification: (id) => {
     set((state) => ({
-      notifications: state.notifications.filter(n => n.id !== id)
-    }));
+      notifications: state.notifications.filter((n) => n.id !== id),
+    }))
   },
 
   // ========================================
@@ -107,17 +116,17 @@ export const useAuthStore = create<AuthState>((set) => ({
       email,
       password,
       rememberMe: true,
-    });
-    
-    console.log("Sign-in response:", { data, error });
-    
+    })
+
+    console.log('Sign-in response:', { data, error })
+
     if (error) {
-      handleAuthError(error, 'サインインに失敗しました');
-      return;
+      handleAuthError(error, 'サインインに失敗しました')
+      return
     }
-    
+
     if (data?.user) {
-      handleAuthSuccess(data.user, 'サインインしました', set);
+      handleAuthSuccess(data.user, 'サインインしました', set)
     }
   },
 
@@ -127,48 +136,61 @@ export const useAuthStore = create<AuthState>((set) => ({
       email,
       password,
       name,
-    });
-    
-    console.log("Sign-up response:", { data, error });
-    
+    })
+
+    console.log('Sign-up response:', { data, error })
+
     if (error) {
-      handleAuthError(error, 'アカウント作成に失敗しました');
-      return;
+      handleAuthError(error, 'アカウント作成に失敗しました')
+      return
     }
-    
+
     if (data?.user) {
-      handleAuthSuccess(data.user, 'アカウントを作成しました', set);
+      handleAuthSuccess(data.user, 'アカウントを作成しました', set)
     }
   },
 
   // サインアウト
   signOut: async () => {
-    const { data, error } = await authClient.signOut();
-    
-    console.log("Sign-out response:", { data, error });
-    
+    const { data, error } = await authClient.signOut()
+
+    console.log('Sign-out response:', { data, error })
+
     if (error) {
-      handleAuthError(error, 'サインアウトに失敗しました');
-      return;
+      handleAuthError(error, 'サインアウトに失敗しました')
+      return
     }
-    
-    set({ user: null });
-    useAuthStore.getState().addNotification('サインアウトしました', 'success');
+
+    set({ user: null })
+    useAuthStore.getState().addNotification('サインアウトしました', 'success')
   },
 
   // セッション確認
   checkSession: async () => {
     try {
-      const { data } = await authClient.getSession();
-      
+      const { data } = await authClient.getSession()
+
       if (data?.user) {
-        set({ user: data.user });
+        set({ user: data.user })
       }
     } catch (error) {
-      console.error("Error checking session:", error);
+      console.error('Error checking session:', error)
     } finally {
-      set({ isLoading: false });
+      set({ isLoading: false })
     }
+  },
+
+  // 組織アクション
+  createOrg: async (name, slug, logo?, metadata?, keepCurrentActiveOrganization?) => {
+    try {
+      const { data } = await authClient.organization.create({
+        name,
+        slug,
+        logo,
+        metadata,
+        keepCurrentActiveOrganization,
+      })
+    } catch (error) {}
   },
 
   // ========================================
@@ -176,4 +198,4 @@ export const useAuthStore = create<AuthState>((set) => ({
   // ========================================
   setUser: (user) => set({ user }),
   setLoading: (isLoading) => set({ isLoading }),
-}));
+}))

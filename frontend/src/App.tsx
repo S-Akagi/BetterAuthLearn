@@ -1,42 +1,42 @@
 // src/frontend/src/App.tsx
-import { useState, useEffect } from "react";
-import { useAuthStore } from "./lib/store";
-import { Snackbar } from "./components/Snackbar";
-import "./App.css";
+import { useState, useEffect } from 'react'
+import { useAuthStore } from './lib/store'
+import { Snackbar } from './components/Snackbar'
+import './App.css'
 
 function App() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [name, setName] = useState<string>('')
+  const [isSignUp, setIsSignUp] = useState<boolean>(false)
 
-  const { user, isLoading, signIn, signUp, signOut, checkSession } = useAuthStore();
+  const { user, isLoading, signIn, signUp, signOut, checkSession } = useAuthStore()
 
   // 初回レンダリング時にセッションを確認
   useEffect(() => {
-    checkSession();
-  }, []);
+    checkSession()
+  }, [])
 
   // フォーム送信
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       if (isSignUp) {
-        await signUp(email, password, name);
+        await signUp(email, password, name)
       } else {
-        await signIn(email, password);
+        await signIn(email, password)
       }
       // フォームをクリア
-      setEmail("");
-      setPassword("");
-      setName("");
+      setEmail('')
+      setPassword('')
+      setName('')
     } catch (error) {
-      console.error(`Error ${isSignUp ? 'sign-up' : 'sign-in'}:`, error);
+      console.error(`Error ${isSignUp ? 'sign-up' : 'sign-in'}:`, error)
     }
   }
 
   if (isLoading) {
-    return <div className="p-8">Loading...</div>;
+    return <div className="p-8">Loading...</div>
   }
 
   if (user) {
@@ -45,17 +45,14 @@ function App() {
         <p>Name, {user.name}!</p>
         <p>Email: {user.email}</p>
         <p>Verified: {user.emailVerified ? 'Yes' : 'No'}</p>
-        <button 
-          onClick={signOut}
-          className="mt-4 bg-red-600 text-black py-2 px-4 rounded hover:bg-red-700"
-        >
+        <button onClick={signOut} className="mt-4 bg-red-600 text-black py-2 px-4 rounded hover:bg-red-700">
           Sign Out
         </button>
       </div>
-    );
+    )
   }
 
-return (
+  return (
     <div className="w-full mx-auto mt-8 p-6">
       <div className="flex items-center justify-center mb-6">
         <span className={`font-medium mr-3 ${!isSignUp ? 'text-blue-600' : 'text-gray-500'}`}>Sign In</span>
@@ -76,10 +73,7 @@ return (
           {/* Name (サインアップ時のみ表示) */}
           {isSignUp && (
             <>
-              <label 
-                htmlFor="name" 
-                className="font-medium mr-2"
-              >
+              <label htmlFor="name" className="font-medium mr-2">
                 Name
               </label>
               <input
@@ -94,10 +88,7 @@ return (
           )}
 
           {/* Email */}
-          <label 
-            htmlFor="email" 
-            className="font-medium mr-2"
-          >
+          <label htmlFor="email" className="font-medium mr-2">
             Email
           </label>
           <input
@@ -110,10 +101,7 @@ return (
           />
 
           {/* Password */}
-          <label 
-            htmlFor="password" 
-            className="font-medium ml-6 mr-2"
-          >
+          <label htmlFor="password" className="font-medium ml-6 mr-2">
             Password
           </label>
           <input
@@ -137,7 +125,7 @@ return (
         </div>
       </form>
     </div>
-  );
+  )
 }
 
 const AppWithSnackbar = () => {
@@ -146,7 +134,7 @@ const AppWithSnackbar = () => {
       <App />
       <Snackbar />
     </>
-  );
-};
+  )
+}
 
-export default AppWithSnackbar;
+export default AppWithSnackbar
