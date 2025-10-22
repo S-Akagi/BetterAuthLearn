@@ -3,6 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { schema } from '../db/schema';
 import { db } from '@/db';
 import 'dotenv/config';
+import { organization } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -14,4 +15,5 @@ export const auth = betterAuth({
     'http://localhost:5173',
   ],
   emailAndPassword: { enabled: true, disableSignUp: false },
+  plugins: [organization()],
 });

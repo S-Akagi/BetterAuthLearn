@@ -4,15 +4,9 @@ import { authClient } from './auth'
 // ========================================
 // 型定義
 // ========================================
-interface User {
-  id: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified: boolean
-  createdAt: Date
-  updatedAt: Date
-}
+// Better Authから型を推論
+type User = typeof authClient.$Infer.Session.user
+type Organization = typeof authClient.$Infer.Organization
 
 interface Notification {
   id: string
@@ -23,6 +17,8 @@ interface Notification {
 interface AuthState {
   // 状態
   user: User | null
+  organizations?: Organization[] | null
+  activeOrganization?: Organization | null
   isLoading: boolean
   notifications: Notification[]
 
@@ -41,7 +37,7 @@ interface AuthState {
     name: string,
     slug: string,
     logo?: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     keepCurrentActiveOrganization?: boolean,
   ) => Promise<void>
 
@@ -61,13 +57,17 @@ const createNotification = (message: string, type: 'success' | 'error'): Notific
 })
 
 // 認証成功ハンドリング
-const handleAuthSuccess = (user: User, message: string, set: any) => {
+const handleAuthSuccess = (
+  user: User,
+  message: string,
+  set: (state: Partial<AuthState>) => void
+) => {
   set({ user })
   useAuthStore.getState().addNotification(message, 'success')
 }
 
 // 認証エラーハンドリング
-const handleAuthError = (error: any, fallbackMessage: string) => {
+const handleAuthError = (error: Error | { message?: string }, fallbackMessage: string) => {
   const errorMessage = error?.message || fallbackMessage
   useAuthStore.getState().addNotification(errorMessage, 'error')
   throw new Error(errorMessage)
@@ -79,6 +79,8 @@ const handleAuthError = (error: any, fallbackMessage: string) => {
 export const useAuthStore = create<AuthState>((set) => ({
   // 初期状態
   user: null,
+  organizations: null,
+  activeOrganization: null,
   isLoading: true,
   notifications: [],
 
@@ -165,32 +167,51 @@ export const useAuthStore = create<AuthState>((set) => ({
     useAuthStore.getState().addNotification('サインアウトしました', 'success')
   },
 
-  // セッション確認
+  // 組織アクション
+  // 組織作成
+  createOrg: async (name, slug, logo?, metadata?, keepCurrentActiveOrganization?) => {
+    const { data, error } = await authClient.organization.create({
+      name,
+      slug,
+      logo,
+      metadata,
+      keepCurrentActiveOrganization,
+    })
+
+    console.log('Create-Org response:', { data, error })
+
+    if (error) {
+      handleAuthError(error, '組織作成に失敗しました')
+      return
+    }
+
+    if (data) {
+      useAuthStore.getState().addNotification(
+        `組織「${data.name}」を作成しました`, 
+        'success'
+      )
+      console.log('Created organization:', data)
+      // 必要に応じて状態を更新
+      const { data: orgsData } = await authClient.organization.list()
+      set({ organizations: orgsData || null })  
+    }
+  },
+
+    // セッション確認
   checkSession: async () => {
     try {
       const { data } = await authClient.getSession()
 
       if (data?.user) {
         set({ user: data.user })
+        const { data: orgsData } = await authClient.organization.list()
+        set({ organizations: orgsData || null })
       }
     } catch (error) {
       console.error('Error checking session:', error)
     } finally {
       set({ isLoading: false })
     }
-  },
-
-  // 組織アクション
-  createOrg: async (name, slug, logo?, metadata?, keepCurrentActiveOrganization?) => {
-    try {
-      const { data } = await authClient.organization.create({
-        name,
-        slug,
-        logo,
-        metadata,
-        keepCurrentActiveOrganization,
-      })
-    } catch (_error) {}
   },
 
   // ========================================
