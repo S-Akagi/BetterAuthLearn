@@ -10,17 +10,15 @@ export const Snackbar = () => {
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className={`
-            px-4 py-3 rounded-lg shadow-lg text-white min-w-64 max-w-96
-            transform transition-all duration-300 ease-in-out
-            ${notification.type === 'success' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}
+          className={`min-w-64 max-w-96 transform rounded-lg px-4 py-3 text-white shadow-lg transition-all duration-300 ease-in-out ${notification.type === 'success' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}
           `}
         >
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{notification.message}</span>
+            <span className="font-medium text-sm">{notification.message}</span>
             <button
+              type="button"
               onClick={() => removeNotification(notification.id)}
-              className="ml-3 text-gray-500 text-lg font-bold"
+              className="ml-3 font-bold text-gray-500 text-lg"
             >
               ×
             </button>

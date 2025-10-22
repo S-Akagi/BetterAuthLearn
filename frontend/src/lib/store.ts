@@ -190,7 +190,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         metadata,
         keepCurrentActiveOrganization,
       })
-    } catch (error) {}
+    } catch (_error) {}
   },
 
   // ========================================

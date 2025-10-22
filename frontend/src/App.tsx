@@ -1,5 +1,5 @@
 // src/frontend/src/App.tsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useId } from 'react'
 import { useAuthStore } from './lib/store'
 import { Snackbar } from './components/Snackbar'
 import './App.css'
@@ -10,12 +10,16 @@ function App() {
   const [name, setName] = useState<string>('')
   const [isSignUp, setIsSignUp] = useState<boolean>(false)
 
+  const nameId = useId()
+  const emailId = useId()
+  const passwordId = useId()
+
   const { user, isLoading, signIn, signUp, signOut, checkSession } = useAuthStore()
 
   // 初回レンダリング時にセッションを確認
   useEffect(() => {
     checkSession()
-  }, [])
+  }, [checkSession])
 
   // フォーム送信
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +49,7 @@ function App() {
         <p>Name, {user.name}!</p>
         <p>Email: {user.email}</p>
         <p>Verified: {user.emailVerified ? 'Yes' : 'No'}</p>
-        <button onClick={signOut} className="mt-4 bg-red-600 text-black py-2 px-4 rounded hover:bg-red-700">
+        <button type="button" onClick={signOut} className="mt-4 rounded bg-red-600 px-4 py-2 text-black hover:bg-red-700">
           Sign Out
         </button>
       </div>
@@ -53,19 +57,19 @@ function App() {
   }
 
   return (
-    <div className="w-full mx-auto mt-8 p-6">
-      <div className="flex items-center justify-center mb-6">
-        <span className={`font-medium mr-3 ${!isSignUp ? 'text-blue-600' : 'text-gray-500'}`}>Sign In</span>
-        <label className="relative inline-flex items-center cursor-pointer">
+    <div className="mx-auto mt-8 w-full p-6">
+      <div className="mb-6 flex items-center justify-center">
+        <span className={`mr-3 font-medium ${!isSignUp ? 'text-blue-600' : 'text-gray-500'}`}>Sign In</span>
+        <label className="relative inline-flex cursor-pointer items-center">
           <input
             type="checkbox"
             checked={isSignUp}
             onChange={(e) => setIsSignUp(e.target.checked)}
-            className="sr-only peer"
+            className="peer sr-only"
           />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
         </label>
-        <span className={`font-medium ml-3 ${isSignUp ? 'text-blue-600' : 'text-gray-500'}`}>Sign Up</span>
+        <span className={`ml-3 font-medium ${isSignUp ? 'text-blue-600' : 'text-gray-500'}`}>Sign Up</span>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -73,43 +77,43 @@ function App() {
           {/* Name (サインアップ時のみ表示) */}
           {isSignUp && (
             <>
-              <label htmlFor="name" className="font-medium mr-2">
+              <label htmlFor={nameId} className="mr-2 font-medium">
                 Name
               </label>
               <input
-                id="name"
+                id={nameId}
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-48 p-2 border border-gray-300 rounded mr-6"
+                className="mr-6 w-48 rounded border border-gray-300 p-2"
                 required={isSignUp}
               />
             </>
           )}
 
           {/* Email */}
-          <label htmlFor="email" className="font-medium mr-2">
+          <label htmlFor={emailId} className="mr-2 font-medium">
             Email
           </label>
           <input
-            id="email"
+            id={emailId}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-48 p-2 border border-gray-300 rounded"
+            className="w-48 rounded border border-gray-300 p-2"
             required
           />
 
           {/* Password */}
-          <label htmlFor="password" className="font-medium ml-6 mr-2">
+          <label htmlFor={passwordId} className="mr-2 ml-6 font-medium">
             Password
           </label>
           <input
-            id="password"
+            id={passwordId}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-48 p-2 border border-gray-300 rounded"
+            className="w-48 rounded border border-gray-300 p-2"
             required
           />
         </div>
@@ -118,7 +122,7 @@ function App() {
         <div className="mt-8 text-center">
           <button
             type="submit"
-            className="bg-gray-100 text-gray-800 py-2 px-10 text-lg rounded-lg shadow-sm hover:bg-gray-200"
+            className="rounded-lg bg-gray-100 px-10 py-2 text-gray-800 text-lg shadow-sm hover:bg-gray-200"
           >
             {isSignUp ? 'Sign Up' : 'Sign In'}
           </button>
