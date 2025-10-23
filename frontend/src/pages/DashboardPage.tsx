@@ -17,6 +17,14 @@ export function DashboardPage() {
     try {
       if (orgId) {
         await authClient.organization.setActive({ organizationId: orgId })
+        const { data, error } = await authClient.organization.getFullOrganization({
+          query: {
+              organizationId: orgId,
+              membersLimit: 100,
+          },
+        });
+
+        console.log('Full organization data:', data, 'Error:', error);
       } else {
         await authClient.organization.setActive({ organizationId: null })
       }
@@ -57,12 +65,18 @@ export function DashboardPage() {
       </div>
 
       {/* ナビゲーション */}
-      <div className="mb-6">
+      <div className="mb-6 space-x-4">
         <Link
           to="/organizations"
           className="inline-block rounded-lg bg-indigo-600 px-6 py-2 font-medium text-white shadow-md transition-colors hover:bg-indigo-700"
         >
           Manage Organizations
+        </Link>
+        <Link
+          to="/invite"
+          className="inline-block rounded-lg bg-green-600 px-6 py-2 font-medium text-white shadow-md transition-colors hover:bg-green-700"
+        >
+          Send Invitation
         </Link>
       </div>
 

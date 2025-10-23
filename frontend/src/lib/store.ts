@@ -1,18 +1,6 @@
 import { create } from 'zustand'
 import { authClient } from './auth'
-
-// ========================================
-// 型定義
-// ========================================
-// Better Authから型を推論
-type User = typeof authClient.$Infer.Session.user
-type Organization = typeof authClient.$Infer.Organization
-
-interface Notification {
-  id: string
-  message: string
-  type: 'success' | 'error'
-}
+import type { User, Organization, Notification, OrganizationForm } from '../types/auth'
 
 interface AuthState {
   // 状態
@@ -32,13 +20,7 @@ interface AuthState {
   checkSession: () => Promise<void>
 
   // 組織アクション
-  createOrg: (
-    name: string,
-    slug: string,
-    logo?: string,
-    metadata?: Record<string, unknown>,
-    keepCurrentActiveOrganization?: boolean,
-  ) => Promise<void>
+  createOrg: (form: Omit<OrganizationForm, 'logo' | 'metadata'> & Partial<Pick<OrganizationForm, 'logo' | 'metadata'>>, keepCurrentActiveOrganization?: boolean) => Promise<void>
 
   // 内部アクション
   setUser: (user: User | null) => void
@@ -50,7 +32,7 @@ interface AuthState {
 // ========================================
 // 通知作成
 const createNotification = (message: string, type: 'success' | 'error'): Notification => ({
-  id: Date.now().toString(),
+  id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
   message,
   type,
 })
@@ -174,12 +156,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   // 組織アクション
   // 組織作成
-  createOrg: async (name, slug, logo?, metadata?, keepCurrentActiveOrganization?) => {
+  createOrg: async (form, keepCurrentActiveOrganization?) => {
     const { data, error } = await authClient.organization.create({
-      name,
-      slug,
-      logo,
-      metadata,
+      ...form,
       keepCurrentActiveOrganization,
     })
 

@@ -1,11 +1,11 @@
-import { useState, useId } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useId, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../lib/store'
 
 export function LoginPage() {
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
   const [isSignUp, setIsSignUp] = useState<boolean>(false)
 
   const nameId = useId()
@@ -14,11 +14,15 @@ export function LoginPage() {
 
   const { signIn, signUp, user } = useAuthStore()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
-  // ログイン済みの場合はダッシュボードにリダイレクト
-  if (user) {
-    navigate('/dashboard')
-  }
+  // ログイン済みの場合はリダイレクト先またはダッシュボードにリダイレクト
+  useEffect(() => {
+    if (user) {
+      const redirectTo = searchParams.get('redirect') || '/dashboard'
+      navigate(redirectTo)
+    }
+  }, [user, navigate, searchParams])
 
   // フォーム送信
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,8 +37,9 @@ export function LoginPage() {
       setEmail('')
       setPassword('')
       setName('')
-      // ログイン成功後はダッシュボードに移動
-      navigate('/dashboard')
+      // ログイン成功後はリダイレクト先またはダッシュボードに移動
+      const redirectTo = searchParams.get('redirect') || '/dashboard'
+      navigate(redirectTo)
     } catch (error) {
       console.error(`Error ${isSignUp ? 'sign-up' : 'sign-in'}:`, error)
     }

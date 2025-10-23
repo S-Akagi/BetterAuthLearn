@@ -7,6 +7,8 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { OrganizationPage } from './pages/OrganizationPage'
+import { InvitePage } from './pages/InvitePage'
+import { AcceptInvitePage } from './pages/AcceptInvitePage'
 import './App.css'
 
 function App() {
@@ -37,6 +39,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/invite"
+          element={
+            <ProtectedRoute>
+              <InvitePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/accept-invitation/:id" element={<AcceptInvitePage />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
       <Snackbar />
